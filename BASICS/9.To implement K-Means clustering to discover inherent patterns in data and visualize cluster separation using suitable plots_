@@ -1,0 +1,46 @@
+from sklearn.cluster import KMeans
+
+print("\n" + "="*60)
+print("AIM 9: K-Means Clustering")
+print("="*60)
+
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X)
+
+
+print(f"\nCluster Centers:\n{kmeans.cluster_centers_}")
+print(f"Inertia (Within-cluster sum of squares): {kmeans.inertia_:.4f}")
+
+inertias = []
+K_range = range(1, 11)
+
+for k in K_range:
+    kmeans_temp = KMeans(n_clusters=k, random_state=42)
+    kmeans_temp.fit(X)
+    inertias.append(kmeans_temp.inertia_)
+
+plt.figure(figsize=(12, 5))
+
+
+plt.subplot(1, 2, 1)
+plt.plot(K_range, inertias, marker='o')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Inertia')
+plt.title('Elbow Method for Optimal k')
+plt.grid(True)
+
+
+plt.subplot(1, 2, 2)
+for i in range(3):
+    plt.scatter(X[clusters == i, 0], X[clusters == i, 1], label=f'Cluster {i}')
+plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], 
+           s=300, c='red', marker='X', edgecolors='black', linewidths=2, label='Centroids')
+plt.xlabel('Sepal Length')
+plt.ylabel('Sepal Width')
+plt.title('K-Means Clustering Results')
+plt.legend()
+plt.grid(True)
+
+plt.tight_layout()
+plt.savefig('kmeans_clustering.png')
+print("\nK-Means clustering plots saved as 'kmeans_clustering.png'")

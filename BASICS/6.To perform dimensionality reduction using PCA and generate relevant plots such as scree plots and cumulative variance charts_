@@ -1,0 +1,30 @@
+# EXP - Principal Component Analysis (PCA)
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+# Load dataset
+df = pd.read_csv("../data/dataset.csv")
+
+# Features only
+X = df.iloc[:, :-1]
+
+# Standardization
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+# Explained variance
+print("Explained Variance Ratio:", pca.explained_variance_ratio_)
+
+# Visualization
+plt.scatter(X_pca[:, 0], X_pca[:, 1])
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.title("PCA Result")
+plt.show()

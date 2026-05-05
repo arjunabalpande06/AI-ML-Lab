@@ -1,0 +1,46 @@
+# Data Preprocessing and Logistic Regression Model
+
+import pandas as pd
+import numpy as np
+
+from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LogisticRegression
+
+# Load dataset
+df = pd.read_csv("../data/Social_Network_Ads.csv")
+
+# Feature selection
+X = df[['Age', 'EstimatedSalary']]
+y = df['Purchased']
+
+# Train-test split (70-30)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.30, random_state=42
+)
+
+# Handling missing values
+imputer = SimpleImputer(strategy='mean')
+X_train[['Age', 'EstimatedSalary']] = imputer.fit_transform(
+    X_train[['Age', 'EstimatedSalary']]
+)
+X_test[['Age', 'EstimatedSalary']] = imputer.transform(
+    X_test[['Age', 'EstimatedSalary']]
+)
+
+# Feature scaling
+scaler = MinMaxScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Logistic Regression Model
+model = LogisticRegression()
+model.fit(X_train_scaled, y_train)
+
+# Model accuracy
+train_accuracy = model.score(X_train_scaled, y_train)
+test_accuracy = model.score(X_test_scaled, y_test)
+
+print(f"Training Accuracy: {train_accuracy:.2f}")
+print(f"Testing Accuracy: {test_accuracy:.2f}")

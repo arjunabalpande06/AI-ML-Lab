@@ -1,0 +1,174 @@
+import pandas as pd
+import numpy as np
+
+1. SERIES (1D)
+
+s = pd.Series([1, 2, 3, 4, 5])
+s_indexed = pd.Series([10, 20, 30], index=['a', 'b', 'c'])
+print("Series:\n", s_indexed)
+print("Access by label:", s_indexed['a'])
+
+
+2. DATAFRAME CREATION
+
+# From dictionary
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie', 'David'],
+    'Age': [25, 30, 35, 28],
+    'Salary': [50000, 60000, 70000, 55000]
+}
+df = pd.DataFrame(data)
+
+From NumPy array
+arr = np.random.randn(4, 3)
+df_np = pd.DataFrame(arr, columns=['A', 'B', 'C'])
+
+# From CSV
+# df = pd.read_csv('data.csv')
+# df = pd.read_excel('data.xlsx')
+
+print("\nDataFrame:\n", df)
+
+
+3. BASIC INFO
+
+print("\nShape:", df.shape)           # (rows, columns)
+print("Columns:", df.columns.tolist())
+print("Data types:\n", df.dtypes)
+print("\nFirst 3 rows:\n", df.head(3))
+print("\nLast 2 rows:\n", df.tail(2))
+print("\nInfo:")
+df.info()
+print("\nStatistics:\n", df.describe())
+
+
+4. INDEXING & SELECTION
+
+# Select column
+print("\nSelect 'Name' column:\n", df['Name'])
+print("\nSelect multiple columns:\n", df[['Name', 'Age']])
+
+# Select rows by index
+print("\nFirst row:\n", df.iloc[0])      # by position
+print("\nRows 1-2:\n", df.iloc[1:3])
+
+# Select by label (if index is set)
+df_indexed = df.set_index('Name')
+print("\nRow for 'Bob':\n", df_indexed.loc['Bob'])
+
+# Select specific cell
+print("\nAge of Bob:", df.iloc[1, 1])  # row 1, column 1
+print("Salary of Alice:", df.loc[0, 'Salary'])
+
+# Boolean indexing
+high_salary = df[df['Salary'] > 55000]
+print("\nHigh salary employees:\n", high_salary)
+
+# Multiple conditions
+filtered = df[(df['Age'] > 25) & (df['Salary'] < 65000)]
+print("\nFiltered data:\n", filtered)
+
+
+5. ADDING/REMOVING COLUMNS
+
+# Add column
+df['Department'] = ['IT', 'HR', 'IT', 'Finance']
+df['Bonus'] = df['Salary'] * 0.1
+
+# Remove column
+df_copy = df.copy()
+df_copy = df_copy.drop('Bonus', axis=1)
+# Or: df_copy.drop(columns=['Bonus'], inplace=True)
+
+print("\nWith new columns:\n", df.head())
+
+
+ 6. HANDLING MISSING DATA
+
+# Create data with missing values
+data_missing = {
+    'A': [1, 2, np.nan, 4],
+    'B': [5, np.nan, 7, 8],
+    'C': [9, 10, 11, 12]
+}
+df_missing = pd.DataFrame(data_missing)
+print("\nData with NaN:\n", df_missing)
+
+# Check for missing values
+print("\nMissing values:\n", df_missing.isnull().sum())
+
+# Drop rows with NaN
+df_dropped = df_missing.dropna()
+print("\nAfter dropna():\n", df_dropped)
+
+# Fill missing values
+df_filled = df_missing.fillna(0)
+print("\nFilled with 0:\n", df_filled)
+
+# Forward fill
+df_ffill = df_missing.fillna(method='ffill')
+
+# Fill with mean
+df_missing['A'].fillna(df_missing['A'].mean(), inplace=True)
+print("\nFilled 'A' with mean:\n", df_missing)
+
+
+7. DATA OPERATIONS
+
+df_ops = pd.DataFrame({
+    'A': [1, 2, 3, 4],
+    'B': [10, 20, 30, 40]
+})
+
+# Arithmetic operations
+df_ops['C'] = df_ops['A'] + df_ops['B']
+df_ops['D'] = df_ops['A'] * 2
+
+# Apply function
+df_ops['A_squared'] = df_ops['A'].apply(lambda x: x**2)
+
+# Apply to entire DataFrame
+df_normalized = (df_ops - df_ops.mean()) / df_ops.std()
+
+print("\nOperations:\n", df_ops)
+
+
+8. GROUPBY & AGGREGATION
+
+sales_data = pd.DataFrame({
+    'Product': ['A', 'B', 'A', 'B', 'A', 'B'],
+    'Region': ['East', 'East', 'West', 'West', 'East', 'West'],
+    'Sales': [100, 150, 120, 180, 110, 160]
+})
+
+# Group by single column
+grouped = sales_data.groupby('Product')['Sales'].sum()
+print("\nSales by Product:\n", grouped)
+
+# Group by multiple columns
+grouped_multi = sales_data.groupby(['Product', 'Region'])['Sales'].mean()
+print("\nAverage sales by Product and Region:\n", grouped_multi)
+
+# Multiple aggregations
+agg_result = sales_data.groupby('Product')['Sales'].agg(['sum', 'mean', 'count'])
+print("\nMultiple aggregations:\n", agg_result)
+
+# Custom aggregations
+custom_agg = sales_data.groupby('Product').agg({
+    'Sales': ['sum', 'mean'],
+    'Region': 'count'
+})
+print("\nCustom aggregations:\n", custom_agg)
+
+
+9. MERGING & JOINING
+
+df1 = pd.DataFrame({
+    'ID': [1, 2, 3],
+    'Name': ['Alice', 'Bob', 'Charlie']
+})
+
+df2 = pd.DataFrame({
+    'ID': [1, 2, 4],
+    'Salary': [50000, 60000, 70000]
+})
